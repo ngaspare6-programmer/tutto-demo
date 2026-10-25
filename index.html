@@ -167,6 +167,64 @@
   .pdf .fine .tot { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 16px; margin-top: 4px; }
   .pdf .nota { color: #6B6E76; font-size: 10.5px; margin-top: 10px; }
 
+  /* ===== lati su computer (solo da 1180 px in su; la colonna centrale non cambia), come le altre demo ===== */
+  .lato { display: none; }
+  @media (min-width: 1180px) {
+    .lato { display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; width: calc((100vw - 720px) / 2); padding: 32px 36px 40px; overflow-y: auto; overscroll-behavior: contain; }
+    .lato.sx { left: 0; border-right: 1px solid var(--linea); }
+    .lato.dx { right: 0; border-left: 1px solid var(--linea); }
+  }
+  .lato .marchio { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 15px; letter-spacing: .02em; display: flex; align-items: center; gap: 8px; }
+  .lato .marchio i { width: 10px; height: 10px; border-radius: 3px; background: var(--verde); display: inline-block; }
+  .lato h2 { font-family: "Space Grotesk", sans-serif; font-size: 26px; line-height: 1.15; margin: 28px 0 10px; letter-spacing: -0.01em; }
+  .lato .frase { color: var(--sec); font-size: 15px; max-width: 36ch; }
+  .vantaggi { list-style: none; margin-top: 22px; display: flex; flex-direction: column; gap: 14px; }
+  .vant-btn { display: flex; gap: 14px; width: 100%; text-align: left; align-items: center; padding: 8px 10px; margin: -8px -10px; border-radius: 12px; }
+  .vant-btn:hover { background: var(--fondo); }
+  .vant-btn .ico { width: 40px; height: 40px; flex: none; border-radius: 10px; background: var(--fondo); color: var(--verde); display: flex; align-items: center; justify-content: center; }
+  .vant-btn .ico svg { width: 22px; height: 22px; }
+  .vant-btn b { display: block; font-size: 15px; }
+  .vant-btn small { color: var(--sec); font-size: 13px; }
+  .vant-btn .vai { margin-left: auto; font-size: 22px; color: var(--verde); }
+  .lato .etichetta { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--sec); margin-bottom: 10px; }
+  .lato .piede-lato { margin-top: auto; padding-top: 24px; font-size: 12px; color: var(--spento); }
+  .stanze-lato { display: flex; flex-direction: column; }
+  .stanze-lato button { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; border-bottom: 1px solid var(--linea); text-align: left; font-size: 15px; }
+  .stanze-lato button .r1 { display: flex; justify-content: space-between; gap: 10px; width: 100%; }
+  .stanze-lato button.on b { color: var(--verde); }
+  .stanze-lato span { color: var(--sec); font-size: 14px; }
+  .stanze-lato .peso { height: 6px; margin: 0; width: 100%; }
+  .tot-lato { padding-top: 14px; }
+  .tot-lato .r1 { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; }
+  .tot-lato .r1 b { font-family: "Barlow Condensed", sans-serif; font-size: 28px; }
+  .tot-lato .m { display: flex; justify-content: space-between; font-size: 13px; color: var(--sec); padding: 2px 0; }
+  .tot-lato .m b { font-family: "Barlow Condensed", sans-serif; font-size: 16px; color: var(--testo); }
+  .tot-lato .pallino { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 6px; }
+  /* a destra: il PDF dal vivo, carta bianca */
+  .foglio-vivo { box-shadow: 0 20px 50px rgba(0,0,0,.35); border-radius: 6px; }
+  .foglio-vivo .vuoto-pdf { color: #9A9DA4; padding: 18px 0 4px; }
+  /* catalogo completo: finestra grande al centro, per sfogliare */
+  #veloCatTutto { align-items: center; }
+  .finestra { background: var(--foglio); width: calc(100% - 64px); max-width: 960px; max-height: 88vh; overflow-y: auto; overscroll-behavior: contain; border-radius: 20px; padding: 24px 28px 28px; transform: translateY(20px); transition: transform .2s; }
+  .velo.on .finestra { transform: none; }
+  .finestra .testa-f { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .finestra h2 { font-family: "Space Grotesk", sans-serif; font-size: 24px; }
+  .finestra .chiudi-f { min-height: 44px; padding: 0 12px; color: var(--sec); font-size: 15px; }
+  .finestra .avviso-cat { color: var(--sec); font-size: 13px; margin-top: 2px; }
+  .finestra .mestieri { max-width: 560px; margin-top: 14px; }
+  .pillole-az { display: flex; gap: 6px; margin: 6px 0 4px; }
+  .pillole-az button { min-height: 40px; padding: 0 14px; border-radius: 999px; background: var(--fondo); color: var(--sec); font-weight: 600; font-size: 13px; }
+  .pillole-az button[aria-pressed="true"] { background: var(--testo); color: var(--bg); }
+  .griglia-cat { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 14px; }
+  .carta-cat { border: 1px solid var(--linea); border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+  .carta-cat .foto { height: 90px; border-radius: 10px; border: 1px solid var(--linea); }
+  .carta-cat .marca { font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--sec); }
+  .carta-cat b { display: block; font-size: 15px; }
+  .carta-cat .cod { font-size: 12px; color: var(--sec); }
+  .carta-cat .riga-p { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: auto; }
+  .carta-cat .riga-p .num { font-size: 20px; font-weight: 700; }
+  .carta-cat .agg-c { min-height: 40px; padding: 0 12px; border-radius: 10px; background: var(--pieno); color: #fff; font-weight: 600; font-size: 13px; }
+
   .toast { position: fixed; left: 50%; bottom: 140px; transform: translate(-50%, 20px); background: #ECEDEF; color: #121316; font-size: 14px; padding: 12px 16px; border-radius: 12px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; max-width: 340px; text-align: center; z-index: 60; }
   [data-tema="chiaro"] .toast { background: #121316; color: #fff; }
   .toast.on { opacity: 1; transform: translate(-50%, 0); }
@@ -251,6 +309,32 @@
   <div class="carta"><div class="pdf" id="pdf"></div></div>
   <p class="nota-demo">Nella demo non si scarica nessun file.</p>
   <button class="chiudi" data-chiudi>Chiudi</button>
+</div></div>
+
+<aside class="lato sx">
+  <div class="marchio"><i></i>GPN Lab</div>
+  <h2>Il preventivo di tutta la casa, dal telefono.</h2>
+  <p class="frase">Elettricista, idraulico e arredamento nello stesso preventivo: conti stanza per stanza, scegli i prodotti con il cliente e lo mandi.</p>
+  <ul class="vantaggi">
+    <li><button class="vant-btn" data-apri-cat><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span><div><b>Il catalogo delle aziende</b><small>Tre mestieri, il cliente sceglie marca e modello.</small></div><span class="vai">›</span></button></li>
+    <li><button class="vant-btn" data-apri-invio><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg></span><div><b>Lo mandi subito</b><small>WhatsApp, email o PDF, appena hai finito.</small></div><span class="vai">›</span></button></li>
+  </ul>
+  <p class="etichetta" style="margin-top:28px">Le stanze del preventivo</p>
+  <div class="stanze-lato" id="stanzeLato"></div>
+  <div class="tot-lato" id="totLato"></div>
+  <p class="piede-lato">Demo: aziende, prodotti e prezzi di prova.</p>
+</aside>
+<aside class="lato dx">
+  <p class="etichetta">Così lo riceve il tuo cliente</p>
+  <div class="pdf foglio-vivo" id="foglioVivo"></div>
+</aside>
+
+<div class="velo" id="veloCatTutto"><div class="finestra">
+  <div class="testa-f"><h2>Catalogo completo</h2><button class="chiudi-f" data-chiudi-cat>Chiudi</button></div>
+  <p class="avviso-cat">Foto, marche e codici di prova: qui andrà il catalogo delle aziende.</p>
+  <div class="mestieri" id="catTuttoMest"></div>
+  <div class="pillole-az" id="catTuttoAz"></div>
+  <div class="griglia-cat" id="catTuttoGriglia"></div>
 </div></div>
 
 <div class="toast" id="toast" role="status"></div>
@@ -534,15 +618,14 @@ document.getElementById("veloInvio").addEventListener("click", e => {
 });
 document.addEventListener("click", e => { if (e.target.closest("[data-apri-pdf]")) { chiudi(); apriPDF(); } });
 
-function apriPDF() {
+function pdfHTML() {
   const righePDF = (st, m) => st.righe.filter(r => C[r.k].m === m).map(r => {
     const c = C[r.k], s = SERIE[c.m][r.mod];
     return `<div class="r"><span class="img" style="background:${s[3]}"></span>
       <span class="n">${c.nome}<small>${AZIENDE[s[0]]} · ${s[1]} · cod. ${AZIENDE[s[0]].slice(-1)}-${c.k.slice(0, 3).toUpperCase()}-0${r.mod + 1}</small></span>
       <span class="qp">${q2(r.q, c.u)}${c.u === "m" ? " m" : ""} × ${euro(prezzo(r.k, r.mod))}</span><span class="imp">${euro(costoRiga(r))}</span></div>`;
   }).join("");
-  document.getElementById("pdf").innerHTML =
-    `<div class="int"><span class="ditta">La tua ditta</span><span class="data">${oggi()}</span></div>
+  return `<div class="int"><span class="ditta">La tua ditta</span><span class="data">${oggi()}</span></div>
      <h3>Preventivo lavori</h3><div class="per">Per: il tuo cliente</div>` +
     stato.stanze.filter(st => st.righe.length).map(st =>
       `<div class="st"><span>${st.nome}</span><span>${euro(costoStanza(st))}</span></div>` +
@@ -552,8 +635,8 @@ function apriPDF() {
     `<div class="fine">${Object.keys(MESTIERI).filter(m => totMestiere(m)).map(m => `<div><span>${MESTIERI[m].nome}</span><span>${euro(totMestiere(m))}</span></div>`).join("")}
        <div class="tot"><span>Totale</span><span>${euro(totale())}</span></div><div><span>IVA esclusa</span><span></span></div></div>
      <div class="nota">Prezzi comprensivi di posa e materiale. Aziende, modelli e prezzi di prova.</div>`;
-  apri("veloPDF");
 }
+function apriPDF() { document.getElementById("pdf").innerHTML = pdfHTML(); apri("veloPDF"); }
 
 // ===== Nuova stanza =====
 function apriStanza() {
@@ -583,6 +666,61 @@ document.getElementById("tema").addEventListener("click", () => {
     b.addEventListener("click", () => history.length > 1 ? history.back() : (location.href = document.referrer || "../"));
   });
 })();
+
+// ===== Lati su computer: vetrina, stanze, PDF dal vivo =====
+const barraPeso = (parti, tot) => tot ? `<span class="peso">${parti.map(([m, v]) => v ? `<span style="width:${v / tot * 100}%;background:var(--${m})"></span>` : "").join("")}</span>` : "";
+function lati() {
+  document.getElementById("stanzeLato").innerHTML = stato.stanze.map((st, i) => {
+    const tot = costoStanza(st), parti = Object.keys(MESTIERI).map(m => [m, costoStanza(st, m)]);
+    return `<button class="${schermo === "S" && aperta === i ? "on" : ""}" data-lato="${i}">
+      <span class="r1"><b>${st.nome}</b><span>${plur(st.righe.length, "voce", "voci")} · ${euro(tot)}</span></span>${barraPeso(parti, tot)}</button>`;
+  }).join("");
+  document.getElementById("totLato").innerHTML =
+    `<div class="r1"><span>Totale</span><b>${euro(totale())}</b></div>` +
+    Object.keys(MESTIERI).map(m => `<div class="m"><span><span class="pallino" style="background:var(--${m})"></span>${MESTIERI[m].nome}</span><b>${euro(totMestiere(m))}</b></div>`).join("");
+  document.getElementById("foglioVivo").innerHTML = vociTot() ? pdfHTML()
+    : `<div class="int"><span class="ditta">La tua ditta</span><span class="data">${oggi()}</span></div><h3>Preventivo lavori</h3><p class="vuoto-pdf">Si riempie mentre aggiungi i componenti nelle stanze.</p>`;
+}
+const _disegna = disegna;
+disegna = function () { _disegna(); lati(); };
+document.getElementById("stanzeLato").addEventListener("click", e => {
+  const b = e.target.closest("[data-lato]"); if (!b) return;
+  aperta = Number(b.dataset.lato); filtro = null; vai("S");
+});
+
+// ===== Catalogo completo dalla vetrina: mestiere → azienda → "Aggiungi a <stanza>" =====
+let catM = "el", catAz = 0;
+function disegnaCatTutto() {
+  const dest = stato.stanze[schermo === "S" ? aperta : 0];
+  document.getElementById("catTuttoMest").innerHTML = Object.entries(MESTIERI).map(([k, m]) =>
+    `<button class="mestiere m-${k} ${k === catM ? "on" : ""}" data-cm="${k}"><span class="pallino" style="background:var(--${k})"></span>${m.nome}</button>`).join("");
+  document.getElementById("catTuttoAz").innerHTML = AZIENDE.map((a, n) => `<button data-caz="${n}" aria-pressed="${n === catAz}">${a}</button>`).join("");
+  document.getElementById("catTuttoGriglia").innerHTML = COMP.filter(c => c.m === catM).flatMap(c =>
+    SERIE[c.m].map((s, i) => s[0] !== catAz ? "" : `<div class="carta-cat">
+      <span class="foto" style="background:${s[3]}"></span>
+      <div><span class="marca">${AZIENDE[s[0]]}</span><b>${c.nome} · ${s[1]}</b><span class="cod">Cod. ${AZIENDE[s[0]].slice(-1)}-${c.k.slice(0, 3).toUpperCase()}-0${i + 1}${c.u === "m" ? " · al metro" : ""}</span></div>
+      <div class="riga-p"><span class="num">${euro(prezzo(c.k, i))}</span><button class="agg-c" data-agg-k="${c.k}" data-agg-mod="${i}">Aggiungi a ${dest.nome}</button></div></div>`)).join("");
+}
+document.addEventListener("click", e => {
+  if (e.target.closest("[data-apri-cat]")) { disegnaCatTutto(); return apri("veloCatTutto"); }
+  if (e.target.closest("[data-apri-invio]")) {
+    if (!vociTot()) return toast("Il preventivo è vuoto: aggiungi qualcosa nelle stanze.");
+    return apri("veloInvio");
+  }
+  if (e.target.closest("[data-chiudi-cat]")) return chiudi();
+});
+document.getElementById("veloCatTutto").addEventListener("click", e => {
+  const m = e.target.closest("[data-cm]"); if (m) { catM = m.dataset.cm; return disegnaCatTutto(); }
+  const a = e.target.closest("[data-caz]"); if (a) { catAz = Number(a.dataset.caz); return disegnaCatTutto(); }
+  const b = e.target.closest("[data-agg-k]"); if (!b) return;
+  // come nell'elettricista: se c'è già, +1 e prende il modello nuovo; la finestra resta aperta
+  const i = schermo === "S" ? aperta : 0, st = stato.stanze[i], k = b.dataset.aggK, mod = Number(b.dataset.aggMod), c = C[k];
+  const gia = st.righe.find(r => r.k === k);
+  if (gia) { gia.q = Math.round((gia.q + (c.u === "m" ? 0.5 : 1)) * 10) / 10; gia.mod = mod; }
+  else st.righe.push({ id: ++nId, k, q: 1, mod });
+  stato.toccato = true; disegna();
+  toast(`${c.nome} · ${SERIE[c.m][mod][1]} aggiunto a ${st.nome}.`);
+});
 
 nuovo();
 disegna();
