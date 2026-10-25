@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="it" data-tema="scuro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Preventivo · Tutto · demo GPN Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* stessi colori delle altre demo: scuro come l'Ingrosso, chiaro per il sole */
+  :root {
+    --bg: #121316; --foglio: #1A1C21; --fondo: #23262D; --linea: #2E3139; --testo: #ECEDEF; --sec: #8C8F98; --spento: #555962;
+    --pieno: #166534; --verde: #22C55E; --verde-tenue: rgba(34,197,94,.12); --graf: #2E3139; --rosso: #F87171;
+    /* un colore per mestiere: diversi anche in chiarezza, non solo nella tinta */
+    --el: #93C5FD; --id: #5EEAD4; --ar: #FCD34D;
+  }
+  :root[data-tema="chiaro"] {
+    --bg: #FFFFFF; --foglio: #FFFFFF; --fondo: #F5F4F0; --linea: #DEDCD5; --testo: #111214; --sec: #4A4D55; --spento: #9A9DA4;
+    --pieno: #166534; --verde: #166534; --verde-tenue: #E8F3EC; --graf: #121316; --rosso: #B91C1C;
+    --el: #1D4ED8; --id: #0F766E; --ar: #A16207;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--testo); font-family: Inter, sans-serif; font-size: 15px; line-height: 1.5; -webkit-tap-highlight-color: transparent; }
+  button { font-family: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  .num { font-family: "Barlow Condensed", sans-serif; font-variant-numeric: tabular-nums; }
+
+  /* scorre la pagina intera; intestazione e piede restano agganciati. Telefono: tutta la larghezza; iPad e computer: colonna fino a 720 px */
+  .app { max-width: 720px; min-height: 100vh; min-height: 100dvh; margin: 0 auto; display: flex; flex-direction: column; }
+  .testa { position: sticky; top: 0; z-index: 5; background: var(--bg); }
+  .corpo { flex: 1; padding: 10px 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .piede { position: sticky; bottom: 0; z-index: 5; background: var(--bg); border-top: 1px solid var(--linea); padding: 12px 16px calc(18px + env(safe-area-inset-bottom)); }
+
+  .barra { display: flex; align-items: center; gap: 2px; padding: 14px 10px 4px 18px; }
+  .barra h1 { font-family: "Space Grotesk", sans-serif; font-size: 18px; font-weight: 700; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .barra button { font-size: 14px; min-height: 44px; padding: 0 6px; color: var(--sec); }
+  .barra .settori { color: var(--verde); font-weight: 600; padding: 0 8px 0 0; margin-left: -4px; }
+  .tema { width: 40px; display: flex; align-items: center; justify-content: center; }
+  .tema svg { width: 20px; height: 20px; }
+  .tema .luna, [data-tema="chiaro"] .tema .sole { display: none; }
+  [data-tema="chiaro"] .tema .luna { display: block; }
+
+  .passi { display: flex; gap: 6px; padding: 6px 18px 0; font-size: 12px; font-weight: 600; color: var(--sec); }
+  .passi span { flex: 1; border-top: 3px solid var(--linea); padding-top: 6px; }
+  .passi .on { border-color: var(--verde); color: var(--testo); }
+
+  .totale { padding: 12px 18px 10px; }
+  .totale .tot { font-size: 44px; font-weight: 700; line-height: 1; }
+  .totale small { display: block; color: var(--sec); font-size: 13px; margin-top: 4px; }
+
+  .schede { display: flex; gap: 2px; padding: 0 8px; border-bottom: 1px solid var(--linea); overflow-x: auto; scrollbar-width: none; }
+  .schede::-webkit-scrollbar { display: none; }
+  .scheda { padding: 12px 12px 11px; min-height: 48px; font-size: 14px; font-weight: 600; color: var(--sec); white-space: nowrap; border-bottom: 3px solid transparent; }
+  .scheda.on { color: var(--testo); border-color: var(--verde); }
+  .scheda.piu { color: var(--verde); font-size: 18px; padding: 8px 14px; }
+
+  /* filtri: il subtotale di ogni mestiere nella stanza (risolve il rischio della direzione B) */
+  .filtri { display: flex; gap: 6px; padding: 10px 14px 2px; overflow-x: auto; scrollbar-width: none; }
+  .filtri::-webkit-scrollbar { display: none; }
+  .filtro { flex: none; display: flex; flex-direction: column; align-items: flex-start; padding: 6px 12px; border-radius: 12px; background: var(--fondo); color: var(--sec); font-size: 12px; font-weight: 600; line-height: 1.25; min-height: 44px; justify-content: center; }
+  .filtro b { font-family: "Barlow Condensed", sans-serif; font-size: 15px; color: var(--testo); font-weight: 700; }
+  .filtro.on { background: var(--testo); color: var(--bg); }
+  .filtro.on b { color: var(--bg); }
+  .filtro .pallino { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 5px; }
+
+  .riga { background: var(--foglio); border: 1px solid var(--linea); border-left-width: 5px; border-radius: 14px; padding: 10px 10px 10px 12px; display: flex; align-items: center; gap: 10px; }
+  .riga.m-el { border-left-color: var(--el); } .riga.m-id { border-left-color: var(--id); } .riga.m-ar { border-left-color: var(--ar); }
+  .etich { flex: 1; min-width: 0; text-align: left; }
+  .etich b { display: block; font-size: 15.5px; line-height: 1.25; }
+  .etich small { display: block; font-size: 12.5px; color: var(--sec); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .etich small i { font-style: normal; color: var(--verde); font-weight: 600; }
+  .tasto { width: 52px; height: 52px; flex: none; border-radius: 12px; background: var(--fondo); font-family: "Space Grotesk", sans-serif; font-size: 24px; font-weight: 600; }
+  .tasto:active { transform: scale(.94); }
+  .q { width: 38px; text-align: center; flex: none; line-height: 1.05; }
+  .q b { font-family: "Barlow Condensed", sans-serif; font-size: 24px; font-weight: 700; display: block; }
+  .q small { font-size: 11px; color: var(--sec); }
+  .q.batte b { animation: batte .25s; }
+  @keyframes batte { 50% { transform: scale(1.25); color: var(--verde); } }
+  .vuota { text-align: center; color: var(--sec); padding: 18px 0 6px; }
+  .agg { width: 100%; min-height: 52px; border: 1.5px dashed var(--linea); border-radius: 14px; color: var(--verde); font-weight: 600; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+  .togli-stanza { min-height: 44px; font-size: 14px; color: var(--sec); align-self: center; padding: 0 12px; }
+
+  .sub { display: flex; justify-content: space-between; align-items: baseline; font-size: 15px; margin-bottom: 10px; }
+  .sub b { font-size: 20px; }
+  .btn { width: 100%; min-height: 56px; border-radius: 12px; background: var(--pieno); color: #fff; font-weight: 600; font-size: 16px; display: flex; align-items: center; justify-content: center; }
+
+  /* fogli dal basso */
+  .velo { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 40; }
+  .velo.on { opacity: 1; pointer-events: auto; }
+  .foglio { background: var(--foglio); width: 100%; max-width: 560px; max-height: 90%; overflow-y: auto; overscroll-behavior: contain; border-radius: 20px 20px 0 0; padding: 18px 16px calc(20px + env(safe-area-inset-bottom)); transform: translateY(30px); transition: transform .2s; }
+  .velo.on .foglio { transform: none; }
+  .foglio h2 { font-family: "Space Grotesk", sans-serif; font-size: 19px; margin-bottom: 4px; }
+  .foglio .spiega { font-size: 13px; color: var(--sec); margin-bottom: 10px; }
+  .mestieri { display: flex; gap: 6px; margin: 6px 0 12px; }
+  .mestiere { flex: 1; min-height: 48px; border-radius: 12px; background: var(--fondo); font-size: 13px; font-weight: 700; color: var(--sec); display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .mestiere .pallino { width: 9px; height: 9px; border-radius: 3px; }
+  .mestiere.on { color: var(--testo); box-shadow: inset 0 0 0 2px currentColor; }
+  .mestiere.on.m-el { color: var(--el); } .mestiere.on.m-id { color: var(--id); } .mestiere.on.m-ar { color: var(--ar); }
+  .scelte { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .scelte button { min-height: 56px; border: 1.5px solid var(--linea); border-radius: 12px; font-weight: 600; font-size: 14px; padding: 6px 10px; text-align: center; line-height: 1.25; }
+  .scelte button small { display: block; color: var(--sec); font-weight: 500; font-size: 12px; }
+  .azienda { font-size: 12px; text-transform: uppercase; letter-spacing: .07em; color: var(--sec); margin: 12px 0 6px; }
+  .modello { width: 100%; text-align: left; border: 1.5px solid var(--linea); border-radius: 12px; padding: 10px 12px; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+  .modello[aria-pressed="true"] { border: 2px solid var(--verde); background: var(--verde-tenue); }
+  .campione { width: 34px; height: 34px; border-radius: 9px; flex: none; }
+  .modello .n { flex: 1; font-weight: 600; font-size: 14px; }
+  .modello .n small { display: block; color: var(--sec); font-weight: 400; font-size: 12px; }
+  .modello .p { font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 18px; }
+  .rosso { color: var(--rosso); font-weight: 600; min-height: 48px; width: 100%; margin-top: 8px; font-size: 15px; }
+  .chiudi { width: 100%; min-height: 50px; border: 1.5px solid var(--linea); border-radius: 14px; font-weight: 600; margin-top: 10px; }
+
+  .schede[hidden], .filtri[hidden] { display: none; }
+
+  /* ---------- 2 · Riepilogo ---------- */
+  .peso { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: var(--fondo); margin: 4px 0 8px; }
+  .peso span { height: 100%; }
+  .legenda { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--sec); }
+  .legenda b { color: var(--testo); font-family: "Barlow Condensed", sans-serif; font-size: 16px; }
+  .legenda .pallino, .stanza-r .pallino { display: inline-block; width: 9px; height: 9px; border-radius: 3px; margin-right: 6px; }
+  .stanza-r { background: var(--foglio); border: 1px solid var(--linea); border-radius: 16px; padding: 14px; }
+  .stanza-r .testa-r { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .stanza-r .testa-r b { font-family: "Space Grotesk", sans-serif; font-size: 17px; }
+  .stanza-r .testa-r .num { font-size: 22px; font-weight: 700; }
+  .parte { border-top: 1px solid var(--linea); margin-top: 10px; padding-top: 8px; }
+  .parte .riga1 { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+  .parte .riga1 b { font-family: "Barlow Condensed", sans-serif; font-size: 17px; letter-spacing: 0; }
+  .parte .voci-r { font-size: 13px; color: var(--sec); margin-top: 2px; }
+  .cambia { min-height: 44px; color: var(--verde); font-weight: 600; font-size: 14px; margin-top: 4px; }
+  .link { display: block; width: 100%; min-height: 44px; margin-top: 4px; font-size: 14px; color: var(--sec); text-align: center; }
+  .link b { color: var(--verde); }
+  .btn:disabled { background: var(--fondo); color: var(--spento); cursor: default; }
+
+  /* invio e anteprime (nella demo non parte niente) */
+  .canali button { width: 100%; text-align: left; min-height: 62px; padding: 10px 14px; border: 1.5px solid var(--linea); border-radius: 12px; margin-top: 8px; }
+  .canali b { display: block; font-size: 15px; } .canali small { color: var(--sec); font-size: 13px; }
+  .chat { background: #EFEAE2; border-radius: 14px; padding: 12px; margin-top: 8px; }
+  .bolla { background: #D9FDD3; border-radius: 10px 10px 2px 10px; padding: 9px 11px 6px; margin-left: 18px; font-size: 14px; line-height: 1.45; color: #111b21; }
+  .allegato { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; background: rgba(0,0,0,.06); border-radius: 8px; padding: 8px 10px; margin-top: 8px; color: #111b21; }
+  .allegato .ico { width: 30px; height: 36px; border-radius: 4px; background: #E5484D; color: #fff; font-size: 10px; font-weight: 700; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; flex: none; }
+  .allegato small { display: block; color: #667781; font-size: 12px; }
+  .ora { display: block; text-align: right; font-size: 11px; color: #667781; margin-top: 4px; }
+  .mail { border: 1px solid var(--linea); border-radius: 12px; overflow: hidden; margin-top: 8px; font-size: 14px; background: #fff; color: #111214; }
+  .mail-testa { background: #F5F4F0; padding: 10px 12px; border-bottom: 1px solid #DEDCD5; color: #4A4D55; }
+  .mail-testa b { color: #111214; font-weight: 600; }
+  .mail-corpo { padding: 12px; line-height: 1.5; }
+  .nota-demo { text-align: center; font-size: 13px; color: var(--sec); margin: 12px 0 0; }
+
+  /* il PDF: carta bianca anche in scuro (è un documento) */
+  .carta { background: #E9E7E1; border-radius: 12px; padding: 12px; margin-top: 8px; }
+  .pdf { background: #fff; color: #111214; box-shadow: 0 2px 10px rgba(0,0,0,.15); padding: 18px 16px 20px; font-size: 12px; line-height: 1.4; }
+  .pdf .int { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #111214; padding-bottom: 8px; }
+  .pdf .ditta { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 15px; }
+  .pdf .data { color: #4A4D55; text-align: right; }
+  .pdf h3 { font-family: "Space Grotesk", sans-serif; font-size: 18px; margin: 12px 0 2px; }
+  .pdf .per { color: #4A4D55; margin-bottom: 8px; }
+  .pdf .st { display: flex; justify-content: space-between; font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 14px; background: #F5F4F0; padding: 6px 8px; border-radius: 6px; margin-top: 12px; }
+  .pdf .mest { display: flex; justify-content: space-between; font-size: 10.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; margin: 8px 0 2px; padding: 0 2px; }
+  .pdf .mest.m-el { color: #1D4ED8; } .pdf .mest.m-id { color: #0F766E; } .pdf .mest.m-ar { color: #A16207; }
+  .pdf .r { display: flex; align-items: center; gap: 8px; padding: 5px 2px; border-bottom: 1px solid #ECEAE4; }
+  .pdf .r .img { width: 26px; height: 26px; border-radius: 5px; flex: none; border: 1px solid #DEDCD5; }
+  .pdf .r .n { flex: 1; min-width: 0; }
+  .pdf .r .n small { display: block; color: #6B6E76; font-size: 10.5px; }
+  .pdf .r .qp { color: #4A4D55; white-space: nowrap; font-size: 11px; }
+  .pdf .r .imp { font-weight: 700; min-width: 54px; text-align: right; }
+  .pdf .fine { margin-top: 14px; border-top: 2px solid #111214; padding-top: 8px; }
+  .pdf .fine div { display: flex; justify-content: space-between; padding: 2px 0; }
+  .pdf .fine .tot { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 16px; margin-top: 4px; }
+  .pdf .nota { color: #6B6E76; font-size: 10.5px; margin-top: 10px; }
+
+  .toast { position: fixed; left: 50%; bottom: 140px; transform: translate(-50%, 20px); background: #ECEDEF; color: #121316; font-size: 14px; padding: 12px 16px; border-radius: 12px; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; max-width: 340px; text-align: center; z-index: 60; }
+  [data-tema="chiaro"] .toast { background: #121316; color: #fff; }
+  .toast.on { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="testa">
+    <div class="barra">
+      <button class="settori" data-settori hidden>‹ Settori</button>
+      <h1>Nuovo preventivo</h1>
+      <button class="tema" id="tema" aria-label="Cambia colori: chiaro o scuro">
+        <svg class="sole" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+      </button>
+      <button id="ricomincia">Ricomincia</button>
+    </div>
+    <div class="passi" id="passi"></div>
+    <div class="totale"><div class="tot num" id="totale">€ 0</div><small id="sintesi"></small></div>
+    <div class="schede" id="schede"></div>
+    <div class="filtri" id="filtri"></div>
+  </div>
+
+  <div class="corpo" id="corpo"></div>
+
+  <div class="piede" id="piede"></div>
+</div>
+
+<!-- foglio: aggiungi un componente -->
+<div class="velo" id="veloAgg"><div class="foglio">
+  <h2>Che cosa aggiungi?</h2>
+  <p class="spiega" id="aggSpiega"></p>
+  <div class="mestieri" id="aggMestieri"></div>
+  <div class="scelte" id="aggScelte"></div>
+  <button class="chiudi" data-chiudi>Chiudi</button>
+</div></div>
+
+<!-- foglio: catalogo di un componente -->
+<div class="velo" id="veloCat"><div class="foglio">
+  <h2 id="catTitolo"></h2>
+  <p class="spiega" id="catSpiega"></p>
+  <div id="catModelli"></div>
+  <button class="rosso" id="catTogli">Togli dalla stanza</button>
+  <button class="chiudi" data-chiudi>Chiudi</button>
+</div></div>
+
+<!-- foglio: nuova stanza -->
+<div class="velo" id="veloStanza"><div class="foglio">
+  <h2>Che stanza aggiungi?</h2>
+  <div class="scelte" id="stanzaScelte"></div>
+  <button class="chiudi" data-chiudi>Chiudi</button>
+</div></div>
+
+<!-- foglio: come lo mandi? -->
+<div class="velo" id="veloInvio"><div class="foglio">
+  <h2>Come lo mandi?</h2>
+  <p class="spiega">Il cliente riceve sempre il PDF del preventivo.</p>
+  <div class="canali">
+    <button data-canale="wa"><b>WhatsApp</b><small>Un messaggio con il PDF allegato</small></button>
+    <button data-canale="mail"><b>Email</b><small>Una mail con il PDF allegato</small></button>
+    <button data-canale="pdf"><b>Scarica PDF</b><small>Da stampare o mandare come vuoi</small></button>
+  </div>
+  <button class="chiudi" data-chiudi>Annulla</button>
+</div></div>
+
+<div class="velo" id="veloWA"><div class="foglio">
+  <h2>Ecco cosa riceverebbe il cliente</h2>
+  <div class="chat"><div class="bolla" id="bollaWA"></div></div>
+  <p class="nota-demo">Nella demo non parte nessun messaggio.</p>
+  <button class="chiudi" data-chiudi>Chiudi</button>
+</div></div>
+
+<div class="velo" id="veloMail"><div class="foglio">
+  <h2>Ecco la mail che riceverebbe il cliente</h2>
+  <div class="mail"><div class="mail-testa">A: <b>il tuo cliente</b><br>Oggetto: <b id="mailOggetto"></b></div><div class="mail-corpo" id="mailCorpo"></div></div>
+  <p class="nota-demo">Nella demo non parte nessuna mail.</p>
+  <button class="chiudi" data-chiudi>Chiudi</button>
+</div></div>
+
+<div class="velo" id="veloPDF"><div class="foglio">
+  <h2>Il PDF del preventivo</h2>
+  <div class="carta"><div class="pdf" id="pdf"></div></div>
+  <p class="nota-demo">Nella demo non si scarica nessun file.</p>
+  <button class="chiudi" data-chiudi>Chiudi</button>
+</div></div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+// ===== Dati finti: i tre mestieri, i loro componenti, le aziende =====
+// Semplificato rispetto alle demo dei singoli mestieri: stessi nomi e stesso modo di prezzare (posa + modello),
+// ma un catalogo leggero (tre aziende, due modelli ciascuna). Il dettaglio di ogni mestiere resta nella sua demo.
+const MESTIERI = {
+  el: { nome: "Elettrico" },
+  id: { nome: "Idraulica" },
+  ar: { nome: "Arredamento" },
+};
+// k, mestiere, nome, unità, posa (lavoro) e materiale di base (il modello lo moltiplica)
+const COMP = [
+  { k: "faretto",   m: "el", nome: "Faretto a incasso", u: "pz", posa: 30,  mat: 18 },
+  { k: "plafoniera",m: "el", nome: "Plafoniera",        u: "pz", posa: 30,  mat: 35 },
+  { k: "applique",  m: "el", nome: "Applique",          u: "pz", posa: 30,  mat: 45 },
+  { k: "bipolare",  m: "el", nome: "Presa bipolare",    u: "pz", posa: 25,  mat: 6 },
+  { k: "schuko",    m: "el", nome: "Presa schuko",      u: "pz", posa: 25,  mat: 8 },
+  { k: "interr",    m: "el", nome: "Interruttore",      u: "pz", posa: 20,  mat: 5 },
+  { k: "linea",     m: "el", nome: "Linea dedicata",    u: "pz", posa: 45,  mat: 40 },
+  { k: "wc",        m: "id", nome: "WC sospeso",        u: "pz", posa: 200, mat: 180 },
+  { k: "bidet",     m: "id", nome: "Bidet",             u: "pz", posa: 180, mat: 150 },
+  { k: "lavabo",    m: "id", nome: "Lavabo",            u: "pz", posa: 160, mat: 140 },
+  { k: "doccia",    m: "id", nome: "Piatto doccia",     u: "pz", posa: 220, mat: 220 },
+  { k: "vasca",     m: "id", nome: "Vasca",             u: "pz", posa: 300, mat: 420 },
+  { k: "lavello",   m: "id", nome: "Lavello cucina",    u: "pz", posa: 160, mat: 160 },
+  { k: "rubinetto", m: "id", nome: "Rubinetto",         u: "pz", posa: 35,  mat: 60 },
+  { k: "base",      m: "ar", nome: "Base cucina 60 cm", u: "pz", posa: 25,  mat: 260 },
+  { k: "pensile",   m: "ar", nome: "Pensile 60 cm",     u: "pz", posa: 20,  mat: 180 },
+  { k: "colonna",   m: "ar", nome: "Colonna forno",     u: "pz", posa: 35,  mat: 420 },
+  { k: "top",       m: "ar", nome: "Top cucina",        u: "m",  posa: 15,  mat: 150 },
+  { k: "moblav",    m: "ar", nome: "Mobile lavabo",     u: "pz", posa: 40,  mat: 380 },
+  { k: "specchio",  m: "ar", nome: "Specchio con luce", u: "pz", posa: 15,  mat: 160 },
+  { k: "armadio",   m: "ar", nome: "Armadio 2 ante",    u: "pz", posa: 80,  mat: 650 },
+  { k: "divano",    m: "ar", nome: "Divano 3 posti",    u: "pz", posa: 0,   mat: 900 },
+  { k: "tavolo",    m: "ar", nome: "Tavolo",            u: "pz", posa: 0,   mat: 450 },
+  { k: "sedia",     m: "ar", nome: "Sedia",             u: "pz", posa: 0,   mat: 90 },
+];
+const C = Object.fromEntries(COMP.map(c => [c.k, c]));
+// tre aziende finte, due modelli (serie / finiture) per mestiere; il fattore moltiplica il materiale
+const AZIENDE = ["Azienda 1", "Azienda 2", "Azienda 3"];
+const SERIE = {
+  el: [[0, "Classica", 1, "#E8E6E0"], [0, "Nera", 1.2, "#2B2B2E"], [1, "Opaca", 1.1, "#CFCBC2"], [1, "Alluminio", 1.35, "#A9ADB3"], [2, "Vetro", 1.6, "#BFD9E0"], [2, "Legno", 1.5, "#A47A52"]],
+  id: [[0, "Bianco", 1, "#F2F1EE"], [0, "Nero opaco", 1.3, "#2B2B2E"], [1, "Cromo", 1.15, "#C9CDD2"], [1, "Acciaio", 1.4, "#9EA3A8"], [2, "Design", 1.8, "#D8D2C6"], [2, "Sospeso", 1.6, "#E4E1DA"]],
+  ar: [[0, "Laminato", 1, "#D9D3C7"], [0, "Rovere", 1.3, "#B98E5E"], [1, "Laccato opaco", 1.45, "#E7E3DA"], [1, "Noce", 1.9, "#6E4B32"], [2, "Laccato lucido", 1.6, "#F4F2EE"], [2, "Legno massello", 2.1, "#8A5A35"]],
+};
+const NUOVE = ["Cucina", "Soggiorno", "Camera", "Bagno", "Cameretta", "Lavanderia", "Esterno"];
+
+// ===== Prezzi =====
+const prezzo = (k, mod) => { const c = C[k], s = SERIE[c.m][mod]; return Math.round(c.posa + c.mat * s[2]); };
+const costoRiga = r => r.q * prezzo(r.k, r.mod);
+const costoStanza = (st, m) => st.righe.filter(r => !m || C[r.k].m === m).reduce((t, r) => t + costoRiga(r), 0);
+const totale = () => stato.stanze.reduce((t, st) => t + costoStanza(st), 0);
+const vociTot = () => stato.stanze.reduce((t, st) => t + st.righe.length, 0);
+const euro = n => "€ " + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+const plur = (n, uno, tanti) => n === 1 ? `1 ${uno}` : `${n} ${tanti}`;
+const q2 = (q, u) => u === "m" ? String(q).replace(".", ",") : q;
+
+// ===== Stato: si parte da un Bagno vuoto =====
+let stato, aperta, filtro, schermo = "S", avvisato = false, nId = 0;   // schermo: "S" stanze, "R" riepilogo
+function nuovo() { stato = { stanze: [{ nome: "Bagno", righe: [] }], toccato: false }; aperta = 0; filtro = null; }
+
+// Il numero conta fino al nuovo valore, come nelle altre demo
+let mostrato = 0, anim = null;
+function animaTotale(fine) {
+  cancelAnimationFrame(anim);
+  const el = document.getElementById("totale"), inizio = mostrato, t0 = performance.now();
+  if (inizio === fine) { el.textContent = euro(fine); return; }
+  const passo = t => {
+    const k = Math.min(1, (t - t0) / 350), e = 1 - Math.pow(1 - k, 3);
+    mostrato = Math.round(inizio + (fine - inizio) * e); el.textContent = euro(mostrato);
+    if (k < 1) anim = requestAnimationFrame(passo);
+  };
+  anim = requestAnimationFrame(passo);
+}
+
+// ===== Disegno =====
+function disegna() {
+  animaTotale(totale());
+  document.getElementById("sintesi").textContent = `${plur(vociTot(), "voce", "voci")} · ${plur(stato.stanze.length, "stanza", "stanze")} · IVA esclusa`;
+  document.getElementById("passi").innerHTML = schermo === "S"
+    ? `<span class="on">1 Stanze</span><span>2 Riepilogo</span>`
+    : `<span class="on" style="color:var(--sec)">1 Stanze</span><span class="on">2 Riepilogo</span>`;
+  document.getElementById("schede").hidden = document.getElementById("filtri").hidden = schermo !== "S";
+  if (schermo === "R") return disegnaRiepilogo();
+  const st = stato.stanze[aperta];
+
+  document.getElementById("schede").innerHTML =
+    stato.stanze.map((s, i) => `<button class="scheda ${i === aperta ? "on" : ""}" data-i="${i}">${s.nome}</button>`).join("") +
+    `<button class="scheda piu" id="aggStanza" aria-label="Aggiungi stanza">+</button>`;
+
+  // filtri: Tutti + un mestiere ciascuno, con il subtotale nella stanza
+  document.getElementById("filtri").innerHTML =
+    `<button class="filtro ${!filtro ? "on" : ""}" data-f="">Tutti<b>${euro(costoStanza(st))}</b></button>` +
+    Object.entries(MESTIERI).map(([k, m]) =>
+      `<button class="filtro ${filtro === k ? "on" : ""}" data-f="${k}"><span><span class="pallino" style="background:var(--${k})"></span>${m.nome}</span><b>${euro(costoStanza(st, k))}</b></button>`).join("");
+
+  // righe: tutti i mestieri insieme (o solo quello del filtro), nell'ordine in cui si aggiungono
+  const righe = st.righe.filter(r => !filtro || C[r.k].m === filtro);
+  const corpo = document.getElementById("corpo");
+  corpo.innerHTML = (righe.length ? righe.map(r => {
+      const c = C[r.k], s = SERIE[c.m][r.mod];
+      return `<div class="riga m-${c.m}">
+        <button class="etich" data-cat="${r.id}"><b>${c.nome}</b><small><i>${AZIENDE[s[0]]} · ${s[1]}</i></small><small>${euro(prezzo(r.k, r.mod))} ${c.u === "m" ? "al metro" : "l'uno"}</small></button>
+        <button class="tasto" data-r="${r.id}" data-d="-1" aria-label="Togli uno">−</button>
+        <div class="q" id="q-${r.id}"><b>${q2(r.q, c.u)}</b><small>${c.u}</small></div>
+        <button class="tasto" data-r="${r.id}" data-d="1" aria-label="Aggiungi uno">+</button>
+      </div>`;
+    }).join("")
+    : `<p class="vuota">${filtro ? `Niente di ${MESTIERI[filtro].nome.toLowerCase()} in questa stanza.` : "Stanza vuota: aggiungi quello che ti serve."}</p>`) +
+    `<button class="agg" id="agg">+ Aggiungi${filtro ? ` ${MESTIERI[filtro].nome.toLowerCase()}` : ""}</button>` +
+    (stato.stanze.length > 1 ? `<button class="togli-stanza" id="togliStanza">Togli questa stanza</button>` : "");
+
+  document.getElementById("piede").innerHTML =
+    `<div class="sub"><span>${st.nome} · ${plur(st.righe.length, "voce", "voci")}</span><b class="num">${euro(costoStanza(st))}</b></div>
+     <button class="btn" id="avanti">${aperta + 1 < stato.stanze.length ? `Avanti: ${stato.stanze[aperta + 1].nome} →` : "Vai al riepilogo →"}</button>`;
+}
+
+// ===== 2 · Riepilogo: il preventivo unico =====
+const totMestiere = m => stato.stanze.reduce((t, st) => t + costoStanza(st, m), 0);
+function disegnaRiepilogo() {
+  const tot = totale();
+  const pesi = Object.keys(MESTIERI).map(m => [m, totMestiere(m)]);
+  const peso = tot ? `<div class="peso">${pesi.map(([m, v]) => v ? `<span style="width:${v / tot * 100}%;background:var(--${m})"></span>` : "").join("")}</div>` : "";
+  document.getElementById("corpo").innerHTML =
+    `<div style="padding:2px 4px 6px">${peso}
+      <div class="legenda">${pesi.map(([m, v]) => `<span><span class="pallino" style="background:var(--${m})"></span>${MESTIERI[m].nome} <b>${euro(v)}</b></span>`).join("")}</div></div>` +
+    stato.stanze.map((st, i) => {
+      const parti = Object.keys(MESTIERI).filter(m => st.righe.some(r => C[r.k].m === m));
+      return `<div class="stanza-r">
+        <div class="testa-r"><b>${st.nome}</b><span class="num">${euro(costoStanza(st))}</span></div>
+        ${parti.length ? parti.map(m => `<div class="parte">
+            <div class="riga1"><span style="color:var(--${m})"><span class="pallino" style="background:var(--${m})"></span>${MESTIERI[m].nome}</span><b>${euro(costoStanza(st, m))}</b></div>
+            <div class="voci-r">${st.righe.filter(r => C[r.k].m === m).map(r => `${C[r.k].nome} ${q2(r.q, C[r.k].u)}${C[r.k].u === "m" ? " m" : ""}`).join(" · ")}</div>
+          </div>`).join("") : `<div class="parte"><div class="voci-r">Ancora vuota.</div></div>`}
+        <button class="cambia" data-vai-stanza="${i}">Cambia ${st.nome} →</button>
+      </div>`;
+    }).join("");
+  document.getElementById("piede").innerHTML =
+    `<button class="btn" id="rivedi">Rivedi le stanze</button>
+     <button class="link" id="invia">oppure <b>invia il preventivo</b></button>`;
+}
+
+function vai(s) { schermo = s; disegna(); window.scrollTo(0, 0); }
+
+function toast(msg) {
+  const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("on");
+  clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("on"), msg.length > 45 ? 3200 : 2200);
+}
+const apri = id => document.getElementById(id).classList.add("on");
+const chiudi = () => document.querySelectorAll(".velo.on").forEach(v => v.classList.remove("on"));
+document.querySelectorAll("[data-chiudi]").forEach(b => b.addEventListener("click", chiudi));
+document.querySelectorAll(".velo").forEach(v => v.addEventListener("click", e => { if (e.target === v) chiudi(); }));
+
+// ===== Eventi della stanza =====
+document.getElementById("schede").addEventListener("click", e => {
+  const b = e.target.closest(".scheda"); if (!b) return;
+  if (b.id === "aggStanza") return apriStanza();
+  aperta = Number(b.dataset.i); disegna(); window.scrollTo(0, 0);
+});
+document.getElementById("filtri").addEventListener("click", e => {
+  const b = e.target.closest("[data-f]"); if (!b) return;
+  filtro = b.dataset.f || null; disegna();
+});
+document.getElementById("corpo").addEventListener("click", e => {
+  const v = e.target.closest("[data-vai-stanza]");
+  if (v) { aperta = Number(v.dataset.vaiStanza); filtro = null; return vai("S"); }
+  if (schermo !== "S") return;
+  const st = stato.stanze[aperta];
+  const t = e.target.closest(".tasto");
+  if (t) {
+    const r = st.righe.find(x => x.id === Number(t.dataset.r)), passo = C[r.k].u === "m" ? 0.5 : 1;
+    r.q = Math.round((r.q + passo * Number(t.dataset.d)) * 10) / 10;
+    if (r.q <= 0) { st.righe = st.righe.filter(x => x !== r); toast(`${C[r.k].nome} tolto da ${st.nome}.`); }
+    stato.toccato = true; disegna();
+    const q = document.getElementById("q-" + r.id); if (q) { q.classList.remove("batte"); void q.offsetWidth; q.classList.add("batte"); }
+    return;
+  }
+  const c = e.target.closest("[data-cat]"); if (c) return apriCatalogo(Number(c.dataset.cat));
+  if (e.target.closest("#agg")) return apriAggiungi();
+  if (e.target.closest("#togliStanza")) {
+    const nome = st.nome;
+    if (st.righe.length && !confirm(`Togliere ${nome} e quello che c'è dentro?`)) return;
+    stato.stanze.splice(aperta, 1); aperta = Math.min(aperta, stato.stanze.length - 1);
+    stato.toccato = true; disegna(); toast(`${nome} tolta dal preventivo.`);
+  }
+});
+document.getElementById("piede").addEventListener("click", e => {
+  if (e.target.closest("#avanti")) {
+    if (aperta + 1 < stato.stanze.length) { aperta++; disegna(); window.scrollTo(0, 0); }
+    else vai("R");
+  }
+  if (e.target.closest("#rivedi")) { aperta = 0; filtro = null; vai("S"); }
+  if (e.target.closest("#invia")) {
+    if (!vociTot()) return toast("Il preventivo è vuoto: aggiungi qualcosa nelle stanze.");
+    apri("veloInvio");
+  }
+});
+document.getElementById("ricomincia").addEventListener("click", () => {
+  if (stato.toccato && !confirm("Ricominciare da capo? Quello che hai inserito si perde.")) return;
+  nuovo(); vai("S");
+});
+
+// ===== Aggiungi: prima il mestiere, poi il componente =====
+let aggM = "el";
+function apriAggiungi() {
+  aggM = filtro || aggM;
+  disegnaAggiungi(); apri("veloAgg");
+}
+function disegnaAggiungi() {
+  const st = stato.stanze[aperta];
+  document.getElementById("aggSpiega").textContent = `In: ${st.nome}. Entra con il modello più semplice; tocca il nome per cambiarlo.`;
+  document.getElementById("aggMestieri").innerHTML = Object.entries(MESTIERI).map(([k, m]) =>
+    `<button class="mestiere m-${k} ${k === aggM ? "on" : ""}" data-m="${k}"><span class="pallino" style="background:var(--${k})"></span>${m.nome}</button>`).join("");
+  document.getElementById("aggScelte").innerHTML = COMP.filter(c => c.m === aggM).map(c => {
+    const gia = st.righe.find(r => r.k === c.k);
+    return `<button data-k="${c.k}">${c.nome}<small>${gia ? `già qui: ${q2(gia.q, c.u)} ${c.u}` : `da ${euro(prezzo(c.k, 0))}${c.u === "m" ? " al metro" : ""}`}</small></button>`;
+  }).join("");
+}
+document.getElementById("veloAgg").addEventListener("click", e => {
+  const m = e.target.closest("[data-m]"); if (m) { aggM = m.dataset.m; return disegnaAggiungi(); }
+  const b = e.target.closest("[data-k]"); if (!b) return;
+  const st = stato.stanze[aperta], c = C[b.dataset.k], gia = st.righe.find(r => r.k === c.k);
+  if (gia) gia.q = Math.round((gia.q + (c.u === "m" ? 0.5 : 1)) * 10) / 10;
+  else st.righe.push({ id: ++nId, k: c.k, q: c.u === "m" ? 1 : 1, mod: 0 });
+  stato.toccato = true; chiudi();
+  if (filtro && filtro !== c.m) filtro = null;   // se aggiungi un altro mestiere, si vedono tutti
+  disegna();
+  window.scrollTo(0, document.body.scrollHeight);
+  toast(avvisato ? `${c.nome} aggiunto a ${st.nome}.` : `${c.nome} aggiunto. Tocca il nome per il catalogo o per toglierlo.`);
+  avvisato = true;
+});
+
+// ===== Catalogo di un componente: tre aziende, due modelli ciascuna =====
+let catId = null;
+function apriCatalogo(id) {
+  catId = id;
+  const st = stato.stanze[aperta], r = st.righe.find(x => x.id === id), c = C[r.k];
+  document.getElementById("catTitolo").textContent = c.nome;
+  document.getElementById("catSpiega").innerHTML = `<span style="color:var(--${c.m});font-weight:700">${MESTIERI[c.m].nome}</span> · in ${st.nome}. Prezzo = posa + modello. Foto, marche e codici di prova.`;
+  document.getElementById("catModelli").innerHTML = AZIENDE.map((a, ai) =>
+    `<div class="azienda">${a}</div>` +
+    SERIE[c.m].map((s, i) => s[0] !== ai ? "" : `
+      <button class="modello" data-mod="${i}" aria-pressed="${i === r.mod}">
+        <span class="campione" style="background:${s[3]}"></span>
+        <span class="n">${c.nome} · ${s[1]}<small>${a} · codice ${a.slice(-1)}-${c.k.slice(0, 3).toUpperCase()}-0${i + 1}</small></span>
+        <span class="p">${euro(prezzo(c.k, i))}</span>
+      </button>`).join("")).join("");
+  apri("veloCat");
+}
+document.getElementById("catModelli").addEventListener("click", e => {
+  const b = e.target.closest("[data-mod]"); if (!b) return;
+  const r = stato.stanze[aperta].righe.find(x => x.id === catId);
+  r.mod = Number(b.dataset.mod); stato.toccato = true; chiudi(); disegna();
+});
+document.getElementById("catTogli").addEventListener("click", () => {
+  const st = stato.stanze[aperta], r = st.righe.find(x => x.id === catId);
+  st.righe = st.righe.filter(x => x !== r); stato.toccato = true; chiudi(); disegna();
+  toast(`${C[r.k].nome} tolto da ${st.nome}.`);
+});
+
+// ===== Invio: sempre il PDF allegato (nella demo solo anteprima) =====
+const NOME_PDF = "Preventivo-lavori.pdf";
+const oggi = () => new Date().toLocaleDateString("it-IT", { day: "numeric", month: "long", year: "numeric" });
+const allegato = () => `<button class="allegato" data-apri-pdf><span class="ico">PDF</span><span>${NOME_PDF}<small>${plur(stato.stanze.length, "pagina", "pagine")} · tocca per vederlo</small></span></button>`;
+document.getElementById("veloInvio").addEventListener("click", e => {
+  const b = e.target.closest("[data-canale]"); if (!b) return;
+  chiudi();
+  const testo = `Buongiorno, le mando il preventivo dei lavori: ${euro(totale())} IVA esclusa, diviso per stanza e per lavorazione. Resto a disposizione.`;
+  if (b.dataset.canale === "wa") {
+    document.getElementById("bollaWA").innerHTML = testo + allegato() +
+      `<span class="ora">${new Date().toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })} ✓✓</span>`;
+    apri("veloWA");
+  } else if (b.dataset.canale === "mail") {
+    document.getElementById("mailOggetto").textContent = "Preventivo lavori";
+    document.getElementById("mailCorpo").innerHTML = testo + "<br><br>Cordiali saluti" + allegato();
+    apri("veloMail");
+  } else apriPDF();
+});
+document.addEventListener("click", e => { if (e.target.closest("[data-apri-pdf]")) { chiudi(); apriPDF(); } });
+
+function apriPDF() {
+  const righePDF = (st, m) => st.righe.filter(r => C[r.k].m === m).map(r => {
+    const c = C[r.k], s = SERIE[c.m][r.mod];
+    return `<div class="r"><span class="img" style="background:${s[3]}"></span>
+      <span class="n">${c.nome}<small>${AZIENDE[s[0]]} · ${s[1]} · cod. ${AZIENDE[s[0]].slice(-1)}-${c.k.slice(0, 3).toUpperCase()}-0${r.mod + 1}</small></span>
+      <span class="qp">${q2(r.q, c.u)}${c.u === "m" ? " m" : ""} × ${euro(prezzo(r.k, r.mod))}</span><span class="imp">${euro(costoRiga(r))}</span></div>`;
+  }).join("");
+  document.getElementById("pdf").innerHTML =
+    `<div class="int"><span class="ditta">La tua ditta</span><span class="data">${oggi()}</span></div>
+     <h3>Preventivo lavori</h3><div class="per">Per: il tuo cliente</div>` +
+    stato.stanze.filter(st => st.righe.length).map(st =>
+      `<div class="st"><span>${st.nome}</span><span>${euro(costoStanza(st))}</span></div>` +
+      Object.keys(MESTIERI).filter(m => st.righe.some(r => C[r.k].m === m)).map(m =>
+        `<div class="mest m-${m}"><span>${MESTIERI[m].nome}</span><span>${euro(costoStanza(st, m))}</span></div>` + righePDF(st, m)).join("")
+    ).join("") +
+    `<div class="fine">${Object.keys(MESTIERI).filter(m => totMestiere(m)).map(m => `<div><span>${MESTIERI[m].nome}</span><span>${euro(totMestiere(m))}</span></div>`).join("")}
+       <div class="tot"><span>Totale</span><span>${euro(totale())}</span></div><div><span>IVA esclusa</span><span></span></div></div>
+     <div class="nota">Prezzi comprensivi di posa e materiale. Aziende, modelli e prezzi di prova.</div>`;
+  apri("veloPDF");
+}
+
+// ===== Nuova stanza =====
+function apriStanza() {
+  document.getElementById("stanzaScelte").innerHTML = NUOVE.map(n => `<button data-n="${n}">${n}</button>`).join("");
+  apri("veloStanza");
+}
+document.getElementById("stanzaScelte").addEventListener("click", e => {
+  const b = e.target.closest("[data-n]"); if (!b) return;
+  let nome = b.dataset.n, n = 2;   // doppioni numerati: "Bagno 2"
+  while (stato.stanze.some(s => s.nome === nome)) nome = `${b.dataset.n} ${n++}`;
+  stato.stanze.push({ nome, righe: [] }); aperta = stato.stanze.length - 1; filtro = null;
+  stato.toccato = true; chiudi(); disegna(); window.scrollTo(0, 0);
+});
+
+// ===== Colori e arrivo dalla schermata dei settori (come le altre demo) =====
+document.getElementById("tema").addEventListener("click", () => {
+  const h = document.documentElement; h.dataset.tema = h.dataset.tema === "chiaro" ? "scuro" : "chiaro";
+});
+(() => {
+  const qs = new URLSearchParams(location.search);
+  if (qs.get("tema") === "chiaro") document.documentElement.dataset.tema = "chiaro";
+  if (qs.get("da") !== "settori") return;
+  // con "‹ Settori" nella barra c'è meno spazio: il titolo si accorcia in "Preventivo"
+  document.querySelector(".barra h1").textContent = "Preventivo";
+  document.querySelectorAll("[data-settori]").forEach(b => {
+    b.hidden = false;
+    b.addEventListener("click", () => history.length > 1 ? history.back() : (location.href = document.referrer || "../"));
+  });
+})();
+
+nuovo();
+disegna();
+</script>
+</body>
+</html>
